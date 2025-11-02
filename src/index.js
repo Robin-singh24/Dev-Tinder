@@ -6,14 +6,20 @@ const PORT = 3000;
 
 app.use(express.json());
 
-app.get("/", (req,res) => {
-    res.send("Hello and Welcome to DevTinder...");
+
+app.get('/user', (req, res) => {
+    res.send({ firstName: "Robin", lastName: "Singh" });
 })
 
-app.get('/test', (req,res)=>{
-    res.send("This is a testing route, Thank you!");
+app.post('/user', (req, res) => {
+    const user = req.body;
+    res.send(`User ${user.firstName} ${user.lastName} added successfully!`);
 })
 
-app.listen(PORT, ()=>{
+app.delete('/user', (req,res) => {
+    res.send('User deleted successfully!!!');
+})
+
+app.listen(PORT, () => {
     console.log(`Server is running on Port ${PORT}`);
 })
