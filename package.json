@@ -1,0 +1,26 @@
+{
+  "name": "devtinder",
+  "version": "1.0.0",
+  "description": "A tinder for devs",
+  "homepage": "https://github.com/Robin-singh24/Dev-Tinder#readme",
+  "bugs": {
+    "url": "https://github.com/Robin-singh24/Dev-Tinder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Robin-singh24/Dev-Tinder.git"
+  },
+  "license": "ISC",
+  "author": "Robin Singh",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
