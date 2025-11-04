@@ -11,11 +11,28 @@ const PORT = 3000;
 
 app.use(express.json());
 
+
+//Signup API - POST /signup
 app.post('/signup', async (req, res) => {
 
     // create a new instance of a user
     const user = new User(req.body);
-
+    const firstName = req.body.firstName;
+    if(!firstName){
+        return res.status(400).send("First name is required");
+    }
+    const lastName = req.body.lastName;
+    if(!lastName){
+        return res.status(400).send("last name is required");
+    }
+    const email = req.body.email;
+    if(!email){
+        return res.status(400).send("email is required");
+    }
+    const password = req.body.password;
+    if(password.length<6 || password.length>25){
+        return res.status(400).send("Password must be between 6 and 25 characters");
+    }
     try {
         await user.save();
         res.send('User added successfully');
@@ -25,19 +42,19 @@ app.post('/signup', async (req, res) => {
 })
 
 //GET user by ID
-// app.get('/user', async(req,res)=>{
-//     const userId = req.body.userId;
-//     try {
-//         const user = await User.findById(userId);
-//         if(!user){
-//             res.status(404).send("No user found");
-//         }else{
-//             res.send(user);
-//         }
-//     } catch (error) {
-//         res.status(400).send("something went wrong", err);
-//     }
-// })
+app.get('/user/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).send("No user found");
+        } else {
+            res.send(user);
+        }
+    } catch (error) {
+        res.status(400).send("something went wrong", err);
+    }
+})
 
 //Particular User API - GET /user - get a particular user from the database using email
 app.get('/user', async (req, res) => {
@@ -71,9 +88,9 @@ app.delete('/user', async (req, res) => {
 
     try {
         const user = await User.findByIdAndDelete(userId);
-        if(!user){
+        if (!user) {
             res.status(404).send("No user found");
-        }else{
+        } else {
             res.send("User deleted successfully");
         }
     } catch (error) {
@@ -81,24 +98,34 @@ app.delete('/user', async (req, res) => {
     }
 })
 
-
 //UPDATE user API - PATCH /user
-app.patch('/user', async (req, res) => {
-    const userId = req.body.userId;
-    const update = req.body;
+app.patch('/user/:userId', async (req, res) => {
+    const userId = req.params?.userId;
+    const data = req.body;
 
     try {
-        const updatedUser = await User.findByIdAndUpdate(userId, update, {
+
+        const ALLOWED_UPDATES = ['lastName', 'age', 'about', 'gender', 'photoUrl', 'skills'];
+        const isUpdateAllowed = Object.keys(data).every((k) =>
+            ALLOWED_UPDATES.includes(k)
+        );
+        if (!isUpdateAllowed) {
+            throw new Error("Update not allowed");
+        }
+        if (data.skills && data.skills.length > 10) {
+            throw new Error("Skills cannot be more than 10");
+        }
+        const updatedUser = await User.findByIdAndUpdate(userId, data, {
             returnDocument: true,
             runValidators: true,
         });
-        if(!updatedUser){
+        if (!updatedUser) {
             res.status(404).send("No user found");
-        }else{
+        } else {
             res.send("User updated successfully");
         }
     } catch (error) {
-        res.status(400).send("Error updating user" + error.message);
+        res.status(400).send("Error updating user: " + error.message);
     }
 })
 
