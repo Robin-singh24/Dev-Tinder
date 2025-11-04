@@ -3,6 +3,7 @@ import { authAdmin } from './middlewares/auth.js';
 import connectDB from './config/database.js';
 
 import User from './models/user.js';
+import { ReturnDocument } from 'mongodb';
 
 const app = express();
 
@@ -10,38 +11,94 @@ const PORT = 3000;
 
 app.use(express.json());
 
-
-app.get('/admin/getAllData', authAdmin, (req, res) => {
-    res.send("Getting All Data !!!");
-})
-
-app.get('/admin/deleteAllData', authAdmin, (req, res) => {
-    res.send("Deleting All Data !!!");
-})
-
-app.post('/user', (req, res) => {
-    const user = req.body;
-    res.send(`User ${user.firstName} ${user.lastName} added successfully!`);
-})
-
-app.delete('/user', (req, res) => {
-    res.send('User deleted successfully!!!');
-})
-
 app.post('/signup', async (req, res) => {
-    //create a new instance of a user
-    const user = new User({
-        firstName: 'Harry',
-        lastName: 'Potter',
-        email: 'harry@gmail.com',
-        password: 'Harry123',
-    });
+
+    // create a new instance of a user
+    const user = new User(req.body);
 
     try {
         await user.save();
         res.send('User added successfully');
     } catch (error) {
         console.error('Error sending user data to DB', error);
+    }
+})
+
+//GET user by ID
+// app.get('/user', async(req,res)=>{
+//     const userId = req.body.userId;
+//     try {
+//         const user = await User.findById(userId);
+//         if(!user){
+//             res.status(404).send("No user found");
+//         }else{
+//             res.send(user);
+//         }
+//     } catch (error) {
+//         res.status(400).send("something went wrong", err);
+//     }
+// })
+
+//Particular User API - GET /user - get a particular user from the database using email
+app.get('/user', async (req, res) => {
+    const userEmail = req.body.email;
+
+    try {
+        const users = await User.findOne({ email: userEmail })
+        if (!users) {
+            res.status(404).send("No user found");
+        } else {
+            res.send(users);
+        }
+    } catch (err) {
+        res.status(400).send("something went wrong", err);
+    }
+})
+
+//Feed API - GET /feed - get all users from the database 
+app.get('/feed', async (req, res) => {
+    try {
+        const users = await User.find({});
+        res.send(users)
+    } catch (error) {
+        res.send("Error fetching users", error);
+    }
+})
+
+//delete user API - DELETE /user
+app.delete('/user', async (req, res) => {
+    const userId = req.body.userId;
+
+    try {
+        const user = await User.findByIdAndDelete(userId);
+        if(!user){
+            res.status(404).send("No user found");
+        }else{
+            res.send("User deleted successfully");
+        }
+    } catch (error) {
+        res.status(400).send("Error deleting user", error);
+    }
+})
+
+
+//UPDATE user API - PATCH /user
+app.patch('/user', async (req, res) => {
+    const userId = req.body.userId;
+    const update = req.body;
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(userId, update, {
+            returnDocument: true,
+            runValidators: true,
+        });
+        if(!updatedUser){
+            res.status(404).send("No user found");
+        }else{
+            res.send("User updated successfully");
+        }
+    } catch (error) {
+        res.status(400).send("Error updating user" + error.message);
     }
 })
 
