@@ -1,5 +1,5 @@
 import { mongoose } from 'mongoose';
-const { Schema } = mongoose;
+import validator from 'validator';
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
+        validate(value) {
+            if (!validator.isStrongPassword(value)) {
+                throw new Error("PassWord is not Strong Enough: " + value);
+            }
+        }
     },
     age: {
         type: Number,
@@ -33,7 +38,12 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl: {
         type: String,
-        default: "https://media.istockphoto.com/id/1451587807/vector/user-profile-icon-vector-avatar-or-person-icon-profile-picture-portrait-symbol-vector.jpg?s=612x612&w=0&k=20&c=yDJ4ITX1cHMh25Lt1vI1zBn2cAKKAlByHBvPJ8gEiIg="
+        default: "https://tinyurl.com/336yvy4x",
+        validate(value) {
+            if (!validator.isURL(value)) {
+                throw new Error("Invalid Phot URL: " + value);
+            }
+        }
     },
     about: {
         type: String,

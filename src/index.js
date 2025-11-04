@@ -1,6 +1,7 @@
 import express from 'express';
 import { authAdmin } from './middlewares/auth.js';
 import connectDB from './config/database.js';
+import validator from 'validator';
 
 import User from './models/user.js';
 import { ReturnDocument } from 'mongodb';
@@ -17,22 +18,6 @@ app.post('/signup', async (req, res) => {
 
     // create a new instance of a user
     const user = new User(req.body);
-    const firstName = req.body.firstName;
-    if(!firstName){
-        return res.status(400).send("First name is required");
-    }
-    const lastName = req.body.lastName;
-    if(!lastName){
-        return res.status(400).send("last name is required");
-    }
-    const email = req.body.email;
-    if(!email){
-        return res.status(400).send("email is required");
-    }
-    const password = req.body.password;
-    if(password.length<6 || password.length>25){
-        return res.status(400).send("Password must be between 6 and 25 characters");
-    }
     try {
         await user.save();
         res.send('User added successfully');
