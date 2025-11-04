@@ -28,17 +28,21 @@ app.delete('/user', (req, res) => {
     res.send('User deleted successfully!!!');
 })
 
-app.post('/signup', async (req,res) =>{
+app.post('/signup', async (req, res) => {
     //create a new instance of a user
     const user = new User({
-        firstName : 'Harry',
-        lastName : 'Potter',
-        email : 'harry@gmail.com',
-        password : 'Harry123',
+        firstName: 'Harry',
+        lastName: 'Potter',
+        email: 'harry@gmail.com',
+        password: 'Harry123',
     });
 
-    await user.save();
-    res.send('User added successfully');
+    try {
+        await user.save();
+        res.send('User added successfully');
+    } catch (error) {
+        console.error('Error sending user data to DB', error);
+    }
 })
 
 connectDB().then(() => {
