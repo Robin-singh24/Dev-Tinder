@@ -2,22 +2,22 @@ import express from 'express';
 import { authAdmin } from './middlewares/auth.js';
 import connectDB from './config/database.js';
 import bycrypt from 'bcrypt';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
 
 
 //IMPORTS FROM UTILITIES
 import { validateUserSignUpData } from './utils/validation.js'
 import hashedPassword from './utils/hashPassword.js';
-
 import User from './models/user.js';
-import { ReturnDocument } from 'mongodb';
-
 
 const app = express();
 
 const PORT = 3000;
 
+//MIDDLEWARES
 app.use(express.json());
-
+app.use(cookieParser());
 
 //Signup API - POST /signup
 app.post('/signup', async (req, res) => {
@@ -55,10 +55,14 @@ app.post('/login', async (req, res) => {
             throw new Error("Invalid Credentials!!!");
         }
         const isValidPassword = await bycrypt.compare(password, user.password);
-        if (!isValidPassword) {
-            throw new Error("Invalid Credentials!!!");
-        } else {
+        if (isValidPassword) {
+            //jwt token to be implemented
+            const token = await jwt.sign({ _id: user._id }, "Dev@TinderSecret");
+            
+            res.cookie("token", token);
             res.send("Login Successful...");
+        } else {
+            throw new Error("Invalid Credentials!!!");
         }
 
     } catch (error) {
@@ -153,6 +157,29 @@ app.patch('/user/:userId', async (req, res) => {
         }
     } catch (error) {
         res.status(400).send("Error updating user: " + error.message);
+    }
+})
+
+//GET own profile - GET /profile
+app.get('/profile', async (req, res) => {
+    try {
+        const cookies = req.cookies;
+
+        const { token } = cookies;
+        if(!token){
+            throw new Error("Invalid Token");
+        }
+        //Validate the token
+        const decodedMessage = await jwt.verify(token, "Dev@TinderSecret");
+
+        const { _id } = decodedMessage;
+        const user = await User.findById(_id);
+        if(!user){
+            throw new Error("No user found");
+        }
+        res.send(user);
+    } catch (error) {
+        res.status(400).send("Error fetching profile: " + error.message);
     }
 })
 

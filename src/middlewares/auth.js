@@ -7,4 +7,3 @@ export const authAdmin = (req,res,next) => {
         next();
     }
 }
-
