@@ -1,10 +1,16 @@
 import express from 'express';
 import { authAdmin } from './middlewares/auth.js';
 import connectDB from './config/database.js';
-import validator from 'validator';
+import bycrypt from 'bcrypt';
+
+
+//IMPORTS FROM UTILITIES
+import { validateUserSignUpData } from './utils/validation.js'
+import hashedPassword from './utils/hashPassword.js';
 
 import User from './models/user.js';
 import { ReturnDocument } from 'mongodb';
+
 
 const app = express();
 
@@ -15,14 +21,48 @@ app.use(express.json());
 
 //Signup API - POST /signup
 app.post('/signup', async (req, res) => {
-
-    // create a new instance of a user
-    const user = new User(req.body);
     try {
+        //validte the user 
+        validateUserSignUpData(req);
+        const { firstName, lastName, email } = req.body;
+
+        //encrypt the password
+        const hashedPass = await hashedPassword(req.body.password);
+        console.log("Hashed Password: ", hashedPass);
+
+        // create a new instance of a user
+        const user = new User({
+            firstName,
+            lastName,
+            email,
+            password: hashedPass
+        });
+
         await user.save();
         res.send('User added successfully');
     } catch (error) {
         console.error('Error sending user data to DB', error);
+    }
+})
+
+//LOGIN API - POST /login
+app.post('/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            throw new Error("Invalid Credentials!!!");
+        }
+        const isValidPassword = await bycrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            throw new Error("Invalid Credentials!!!");
+        } else {
+            res.send("Login Successful...");
+        }
+
+    } catch (error) {
+        res.status(400).send("something went wrong: " + error.message);
     }
 })
 
@@ -90,7 +130,9 @@ app.patch('/user/:userId', async (req, res) => {
 
     try {
 
-        const ALLOWED_UPDATES = ['lastName', 'age', 'about', 'gender', 'photoUrl', 'skills'];
+        const ALLOWED_UPDATES = ['password', 'lastName', 'age', 'about', 'gender', 'photoUrl', 'skills'];
+        const hashedPass = await hashedPassword(req.body.password);
+        req.body.password = hashedPass;
         const isUpdateAllowed = Object.keys(data).every((k) =>
             ALLOWED_UPDATES.includes(k)
         );

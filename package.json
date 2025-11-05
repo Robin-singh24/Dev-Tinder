@@ -20,6 +20,7 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "express": "^5.1.0",
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.2",
