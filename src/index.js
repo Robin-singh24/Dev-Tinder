@@ -1,7 +1,5 @@
 import express from 'express';
-import bycrypt from 'bcrypt';
 import cookieParser from 'cookie-parser';
-import jwt from 'jsonwebtoken';
 
 
 //IMPORTS FROM UTILITIES
@@ -53,13 +51,16 @@ app.post('/login', async (req, res) => {
         if (!user) {
             throw new Error("Invalid Credentials!!!");
         }
-        const isValidPassword = await bycrypt.compare(password, user.password);
-        if (isValidPassword) {
-            //jwt token to be implemented
-            const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-            const token = jwt.sign({ _id: user._id }, "Dev@TinderSecret", { expiresIn: currentTimeInSeconds + (60 * 10) });//token valid for 10 minutes
+        const isValidPassword = await user.validatePassword(password);
 
-            res.cookie("token", token,{ expires: new Date(Date.now() + 24 * 3600000)}); // cookie valid for 24 hours
+        if (isValidPassword) {
+
+            const token = await user.getJWT();
+
+            res.cookie("token", token, {
+                expires: new Date(Date.now() + 24 * 3600000)
+            }); // cookie valid for 24 hours
+
             res.send("Login Successful...");
         } else {
             throw new Error("Invalid Credentials!!!");
