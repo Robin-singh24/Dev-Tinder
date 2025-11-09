@@ -25,8 +25,7 @@ app.post('/signup', async (req, res) => {
 
         //encrypt the password
         const hashedPass = await hashedPassword(req.body.password);
-        console.log("Hashed Password: ", hashedPass);
-
+        
         // create a new instance of a user
         const user = new User({
             firstName,
