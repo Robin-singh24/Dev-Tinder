@@ -12,6 +12,18 @@ const validateUserSignUpData = (req) => {
     }
 }
 
+const validateEditProfileData = (req) => {
+    const allowedEditFields = ['firstName', 'lastName', 'email', 'skills', 'about', 'photoUrl'];
+
+    const isEditable = Object.keys(req.body).every(field => allowedEditFields.includes(field));
+
+    return isEditable;
+}
+
 export {
-    validateUserSignUpData
+    validateUserSignUpData,
+    validateEditProfileData,
 };
+
+
+
