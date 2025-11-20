@@ -26,10 +26,6 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req, res)
             });
         };
 
-        // if(fromUserId.toString() === toUserId.toString()){
-        //     throw new Error(`You cannot send a request to this User!`);
-        // };
-
         const existingRequest = await ConnectionRequest.findOne({
             $or: [
                 { fromUserId, toUserId },
