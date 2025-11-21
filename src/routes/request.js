@@ -52,7 +52,7 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req, res)
             })
         } else {
             res.json({
-                message: req.user.firstName + " has " + status +" "+ toUser.firstName,
+                message: req.user.firstName + " has " + status + " " + toUser.firstName,
                 data
             })
         }
@@ -61,5 +61,36 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req, res)
         res.status(400).send('Error sending Request: ' + error.message)
     }
 })
+
+requestRouter.post('/request/review/:status/:userId', userAuth, async (req, res) => {
+    try {
+        const loggedInUser = req.user;
+        const { status, userId } = req.params;
+
+        const allowedStatusFields = ["accepted", "rejected"];
+        if (!allowedStatusFields.includes(status)) {
+            return res.status(400).json({ message: "Status not allowed!" });
+        };
+
+        const connectionRequest = await ConnectionRequest.findOne({
+            fromUserId: userId,
+            toUserId: loggedInUser._id,
+            status: "interested",
+        });
+
+        if (!connectionRequest) {
+            return res.status(400).json({ message: "Connection request not found!!!" })
+        };
+
+        connectionRequest.status = status;
+
+        const data = connectionRequest.save();
+
+        res.status(200).json({ message: req.user.firstName + " " + status + " the request successfully.", data });
+
+    } catch (error) {
+        res.status(400).send("An Error occured", error.message);
+    }
+});
 
 export default requestRouter;
