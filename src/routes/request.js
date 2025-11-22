@@ -86,7 +86,7 @@ requestRouter.post('/request/review/:status/:userId', userAuth, async (req, res)
 
         const data = connectionRequest.save();
 
-        res.status(200).json({ message: req.user.firstName + " " + status + " the request successfully.", data });
+        res.status(200).json({ message: req.user.firstName + " " + status + " the request successfully.", data: connectionRequest });
 
     } catch (error) {
         res.status(400).send("An Error occured", error.message);
