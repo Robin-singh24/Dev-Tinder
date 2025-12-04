@@ -24,8 +24,14 @@ authRouter.post('/signup', async (req, res) => {
             password: hashedPass
         });
 
-        await user.save();
-        res.send('User added successfully');
+        const savedUser = await user.save();
+        const token = await savedUser.getJWT();
+
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 24 * 3600000)
+        }); // cookie valid for 24 hours
+
+        res.json({ message: "User Added Successfully!!!", data: savedUser });
     } catch (error) {
         console.error('Error sending user data to DB', error);
     }
@@ -47,7 +53,7 @@ authRouter.post('/login', async (req, res) => {
 
             res.cookie("token", token, {
                 expires: new Date(Date.now() + 24 * 3600000)
-            }); // cookie valid for 24 hours
+            }); 
 
             res.send(user);
         } else {
@@ -62,7 +68,7 @@ authRouter.post('/login', async (req, res) => {
 authRouter.post('/logout', async (req, res) => {
     res.clearCookie('token', {
         httpOnly: true,
-        secure: true, 
+        secure: true,
     }).send('Logged out successfully');
 })
 
