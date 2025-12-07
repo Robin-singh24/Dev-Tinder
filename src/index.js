@@ -29,10 +29,9 @@ app.use('/', profileRouter);
 app.use('/', requestRouter);
 app.use('/', userRouter);
 
-const PORT = process.env.PORT;
 connectDB().then(() => {
     console.log("Database connected successfully");
-    app.listen(PORT, () => {
+    app.listen(process.env.PORT, () => {
         console.log(`Server is running on Port ${PORT}`);
     })
 }).catch((err) => {
