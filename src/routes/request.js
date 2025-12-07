@@ -4,6 +4,8 @@ import { userAuth } from '../middlewares/auth.js';
 import ConnectionRequest from '../models/connectionRequest.js';
 import User from '../models/user.js';
 
+import {run as sendEmail} from "../utils/sendEmail.js"
+
 const requestRouter = express.Router();
 
 //POST /sendConnectionRequest - Send Connection Request API
@@ -44,6 +46,8 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req, res)
         });
 
         const data = await connectionRequest.save();
+        const emailRes = await sendEmail.run();
+        console.log(emailRes);
 
         if (status === "interested") {
             res.json({
@@ -58,7 +62,7 @@ requestRouter.post('/request/send/:status/:toUserId', userAuth, async (req, res)
         }
 
     } catch (error) {
-        res.status(400).send('Error sending Request: ' + error.message)
+        res.status(400).send('Error sending Request: ', error.message)
     }
 })
 

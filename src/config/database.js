@@ -1,11 +1,14 @@
 import mongoose from "mongoose";
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 
 const connectDB = async () => {
-    await mongoose.connect(
-        "mongodb+srv://robin:robin123@devtinder.l3zmnhe.mongodb.net/DevTinder"
-    );
+    try {
+        await mongoose.connect(process.env.DB_CONNECTION_SECRET);
+    } catch (error) {
+        console.error("❌ MongoDB connection error:", error.message);
+        process.exit(1);
+    }
 }
 
 export default connectDB;
