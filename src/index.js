@@ -5,6 +5,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
+import './utils/cronJob.js'
+
 //IMPORTS FROM DB
 import connectDB from './config/database.js';
 
