@@ -3,7 +3,7 @@ import { endOfDay, startOfDay, subDays } from 'date-fns';
 import { run as sendEmail } from './sendEmail.js';
 import ConnectionRequest from '../models/connectionRequest.js';
 
-cron.schedule('57 4 * * *', async () => {
+cron.schedule('* 8 * * *', async () => {
     //send mail to everyone who received a like
     try {
         const yesterday = subDays(new Date(), 1);
