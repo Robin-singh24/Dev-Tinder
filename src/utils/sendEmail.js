@@ -40,7 +40,7 @@ const run = async (subject, body) => {
     "imnetgear@gmail.com",
     "rsbaran.sh@gmail.com",
     subject,
-    body,
+    body, 
   );
 
   try {
