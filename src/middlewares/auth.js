@@ -10,7 +10,7 @@ const userAuth = async (req, res, next) => {
             return res.status(401).send("Please Login!!!");
         }
 
-        const decodedMessage = jwt.verify(token, "Dev@TinderSecret");
+        const decodedMessage = jwt.verify(token, process.env.JWT_SECRET);
         // const { _id } = decodedMessage;
         const user = await User.findById(decodedMessage._id);
         if (!user) {
@@ -22,9 +22,6 @@ const userAuth = async (req, res, next) => {
     } catch (error) {
         res.status(401).send("ERROR : " + error.message);
     }
-    //validate the token
-
-    //Find the user
 }
 
 export { userAuth };
