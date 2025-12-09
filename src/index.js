@@ -1,3 +1,57 @@
+// import dotenv from "dotenv";
+// dotenv.config();
+
+// import express from 'express';
+// import cookieParser from 'cookie-parser';
+// import cors from 'cors';
+
+// import './utils/cronJob.js'
+
+// //IMPORTS FROM DB
+// import connectDB from './config/database.js';
+
+// //ROUTES IMPORTS
+// import authRouter from './routes/auth.js';
+// import profileRouter from './routes/profile.js';
+// import requestRouter from './routes/request.js';
+// import userRouter from './routes/user.js';
+
+
+
+// const app = express(
+//     cors({
+//     origin: process.env.CLIENT_URL,
+//     credentials: true,
+//   })
+// );
+
+// app.options(/.*/, cors());
+
+// //MIDDLEWARES
+// app.use(express.json());
+// app.use(cookieParser());
+// // app.use(cors({
+// //     origin: process.env.CLIENT_URL,
+// //     credentials: true
+// // }));
+
+
+
+// app.use('/', authRouter);
+// app.use('/', profileRouter);
+// app.use('/', requestRouter);
+// app.use('/', userRouter);
+
+// connectDB().then(() => {
+//     console.log("Database connected successfully");
+//     app.listen(process.env.PORT, () => {
+//         console.log(`Server is running on Port ${process.env.PORT}`);
+//     })
+// }).catch((err) => {
+//     console.error("Database connection failed", err);
+// })
+
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -5,49 +59,48 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
-import './utils/cronJob.js'
+import './utils/cronJob.js';
 
-//IMPORTS FROM DB
+// DB
 import connectDB from './config/database.js';
 
-//ROUTES IMPORTS
+// ROUTES
 import authRouter from './routes/auth.js';
 import profileRouter from './routes/profile.js';
 import requestRouter from './routes/request.js';
 import userRouter from './routes/user.js';
 
+const app = express();
 
-
-const app = express(
-    cors({
-    origin: process.env.CLIENT_URL,
+// ====== CORS MUST BE APPLIED HERE ======
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,   // your Vercel URL
     credentials: true,
   })
 );
 
+// Preflight for ALL routes
 app.options(/.*/, cors());
 
-//MIDDLEWARES
+// ====== MIDDLEWARES ======
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors({
-//     origin: process.env.CLIENT_URL,
-//     credentials: true
-// }));
 
-
-
+// ====== ROUTES ======
 app.use('/', authRouter);
 app.use('/', profileRouter);
 app.use('/', requestRouter);
 app.use('/', userRouter);
 
-connectDB().then(() => {
+// ====== START SERVER ======
+connectDB()
+  .then(() => {
     console.log("Database connected successfully");
     app.listen(process.env.PORT, () => {
-        console.log(`Server is running on Port ${process.env.PORT}`);
-    })
-}).catch((err) => {
+      console.log(`Server is running on Port ${process.env.PORT}`);
+    });
+  })
+  .catch((err) => {
     console.error("Database connection failed", err);
-})
-
+  });
