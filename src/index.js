@@ -18,13 +18,12 @@ import userRouter from './routes/user.js';
 
 
 
-const app = express();
-app.use(cors({
-  origin: "https://dinder-finder.vercel.app",
-  credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: "Content-Type, Authorization"
-}));
+const app = express(
+    cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
 
 app.options(/.*/, cors());
 
