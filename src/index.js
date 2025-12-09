@@ -16,15 +16,27 @@ import profileRouter from './routes/profile.js';
 import requestRouter from './routes/request.js';
 import userRouter from './routes/user.js';
 
+
+
 const app = express();
+app.use(cors({
+  origin: "https://dinder-finder.vercel.app",
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Content-Type, Authorization"
+}));
+
+app.options(/.*/, cors());
 
 //MIDDLEWARES
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-    origin: "http://localhost:5173",
-    credentials: true
-}));
+// app.use(cors({
+//     origin: process.env.CLIENT_URL,
+//     credentials: true
+// }));
+
+
 
 app.use('/', authRouter);
 app.use('/', profileRouter);
