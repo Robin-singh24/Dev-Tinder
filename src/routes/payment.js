@@ -10,10 +10,9 @@ import User from '../models/user.js';
 const paymentRouter = express.Router();
 
 paymentRouter.post("/payment/create", userAuth, async (req, res) => {
-
-    console.log("HIT PAYMENT ROUTE");
-    console.log("BODY:", req.body);
     try {
+        const { membershipType, firstName, lastName, email } = req.body;
+        
         const order = await razorPayInstance.orders.create({
             "amount": membershipAmount[membershipType] * 100,  //500 rupees
             "currency": "INR",
