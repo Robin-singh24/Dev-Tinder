@@ -11,18 +11,23 @@ const initialiseSocket = (server) => {
     });
 
     io.on("connection", (socket) => {
-        socket.on("joinChat", ()=>{
+        socket.on("joinChat", ({ userId, targetUserId }) => {
+            const roomId = [userId, targetUserId].join("_");
+
+            console.log("Joining room: " + roomId);
+            socket.join(roomId);
+        });
+
+        socket.on("sendMessage", () => {
 
         });
 
-        socket.on("sendMessage", ()=>{
-
-        });
-
-        socket.on("disconnect", ()=>{
+        socket.on("disconnect", () => {
 
         });
     });
+
+    return io;
 };
 
 export default initialiseSocket;

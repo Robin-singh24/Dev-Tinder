@@ -17,8 +17,7 @@ import profileRouter from './routes/profile.js';
 import requestRouter from './routes/request.js';
 import userRouter from './routes/user.js';
 import paymentRouter from './routes/payment.js'
-import initialiseSocket from "./utils/socket,js";
-
+import initialiseSocket from './utils/socket.js'
 const app = express();
 
 // ====== CORS MUST BE APPLIED HERE ======
